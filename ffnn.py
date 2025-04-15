@@ -185,24 +185,24 @@ if __name__ == "__main__":
         print("Validation accuracy for epoch {}: {}".format(epoch + 1, correct / total))
         print("Validation time for this epoch: {}".format(time.time() - start_time))
         
-        if args.test_data != "to fill":
-            with open(args.test_data) as test_f:
-                test = json.load(test_f)
-            test_data = []
-            for elt in test:
-                test_data.append((elt["text"].split(), int(elt["stars"] - 1)))
-            test_data = convert_to_vector_representation(test_data, word2index)
+    if args.test_data != "to fill":
+        with open(args.test_data) as test_f:
+            test = json.load(test_f)
+        test_data = []
+        for elt in test:
+            test_data.append((elt["text"].split(), int(elt["stars"] - 1)))
+        test_data = convert_to_vector_representation(test_data, word2index)
 
-            print("========== Running on Test Set ==========")
-            model.eval()
-            correct = 0
-            total = 0
-            for input_vector, gold_label in test_data:
-                predicted_vector = model(input_vector)
-                predicted_label = torch.argmax(predicted_vector)
-                correct += int(predicted_label == gold_label)
-                total += 1
-            print("Test Accuracy: {:.4f}".format(correct / total))
+        print("========== Running on Test Set ==========")
+        model.eval()
+        correct = 0
+        total = 0
+        for input_vector, gold_label in test_data:
+            predicted_vector = model(input_vector)
+            predicted_label = torch.argmax(predicted_vector)
+            correct += int(predicted_label == gold_label)
+            total += 1
+        print("Test Accuracy: {:.4f}".format(correct / total))
 
     # write out to results/test.out
     

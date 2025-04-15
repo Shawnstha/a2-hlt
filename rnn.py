@@ -91,7 +91,7 @@ if __name__ == "__main__":
     last_train_accuracy = 0
     last_validation_accuracy = 0
 
-    while not stopping_condition:
+    for epoch in range(args.epochs):
         random.shuffle(train_data)
         model.train()
         # You will need further code to operationalize training, ffnn.py may be helpful
@@ -179,27 +179,27 @@ if __name__ == "__main__":
 
         epoch += 1
 
-        if args.test_data != "to fill":
-            with open(args.test_data) as test_f:
-                test = json.load(test_f)
-            test_data = []
-            for elt in test:
-                test_data.append((elt["text"].split(), int(elt["stars"] - 1)))
+    if args.test_data != "to fill":
+        with open(args.test_data) as test_f:
+            test = json.load(test_f)
+        test_data = []
+        for elt in test:
+            test_data.append((elt["text"].split(), int(elt["stars"] - 1)))
 
-            print("========== Running on Test Set ==========")
-            model.eval()
-            correct = 0
-            total = 0
-            for input_words, gold_label in tqdm(test_data):
-                input_words = " ".join(input_words)
-                input_words = input_words.translate(input_words.maketrans("", "", string.punctuation)).split()
-                vectors = [word_embedding[i.lower()] if i.lower() in word_embedding else word_embedding['unk'] for i in input_words]
-                vectors = torch.tensor(vectors).view(len(vectors), 1, -1)
-                output = model(vectors)
-                predicted_label = torch.argmax(output)
-                correct += int(predicted_label == gold_label)
-                total += 1
-            print("Test Accuracy: {:.4f}".format(correct / total))
+        print("========== Running on Test Set ==========")
+        model.eval()
+        correct = 0
+        total = 0
+        for input_words, gold_label in tqdm(test_data):
+            input_words = " ".join(input_words)
+            input_words = input_words.translate(input_words.maketrans("", "", string.punctuation)).split()
+            vectors = [word_embedding[i.lower()] if i.lower() in word_embedding else word_embedding['unk'] for i in input_words]
+            vectors = torch.tensor(vectors).view(len(vectors), 1, -1)
+            output = model(vectors)
+            predicted_label = torch.argmax(output)
+            correct += int(predicted_label == gold_label)
+            total += 1
+        print("Test Accuracy: {:.4f}".format(correct / total))
 
 
 
